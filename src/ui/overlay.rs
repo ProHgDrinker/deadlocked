@@ -296,7 +296,7 @@ impl App {
         let zero_x = self.config.radar.x as f32+(map_zero_x*size);
         let zero_y = self.config.radar.y as f32+(map_zero_y*size);
 
-        let dampener = 0.0638*size*map_zoom;
+        let dampener = 0.0637*size*map_zoom;
         let player_x = zero_x + (player.position.x*dampener);
         let player_y = zero_y + (player.position.y*-dampener);
 
