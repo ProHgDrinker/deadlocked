@@ -225,6 +225,108 @@ impl App {
         }
 
         self.grenade_manager(data, &painter);
+        if self.config.radar.new_enable {
+            for player in &data.players {
+                self.radar(&painter, player, data);
+            }
+        }
+    }
+
+    fn radar(&self, painter: &Painter, player: &PlayerData, data: &Data) {
+
+        let size = self.config.radar.scale;
+        let map_zero_x;
+        let map_zero_y;
+        let map_zoom;
+        if &data.map_name == "de_dust2" {
+            map_zero_x = 176.0;
+            map_zero_y = 228.0;
+            map_zoom = 1.1;
+        } else if &data.map_name == "de_inferno" {
+            map_zero_x = 132.0;
+            map_zero_y = 246.0;
+            map_zoom = 1.0;
+        } else if &data.map_name == "de_mirage" {
+            map_zero_x = 201.0;
+            map_zero_y = 106.0;
+            map_zoom = 1.0;
+        } else if &data.map_name == "de_ancient_night" || &data.map_name == "de_ancient" {
+            map_zero_x = 183.0;
+            map_zero_y = 134.0;
+            map_zoom = 1.0;
+        } else if &data.map_name == "de_nuke" {
+            map_zero_x = 154.0;
+            map_zero_y = 128.0;
+            map_zoom = 1.0;
+        } else if &data.map_name == "de_train" {
+            map_zero_x = 176.0;
+            map_zero_y = 158.0;
+            map_zoom = 1.0;
+        } else if &data.map_name == "de_overpass" {
+            map_zero_x = 289.0;
+            map_zero_y = 106.0;
+            map_zoom = 1.0;
+        } else if &data.map_name == "de_anubis" {
+            map_zero_x = 167.0;
+            map_zero_y = 198.0;
+            map_zoom = 1.0;
+        } else if &data.map_name == "de_vertigo" {
+            map_zero_x = 246.0;
+            map_zero_y = 137.0;
+            map_zoom = 1.0;
+        } else {
+            map_zero_x = self.config.radar.custom_zero_x as f32;
+            map_zero_y = self.config.radar.custom_zero_y as f32;
+            map_zoom = self.config.radar.custom_zoom;
+        }
+
+        let zero_x = self.config.radar.x as f32+(map_zero_x*size);
+        let zero_y = self.config.radar.y as f32+(map_zero_y*size);
+
+        let dampener = 0.0638*size*map_zoom;
+        let player_x = zero_x + (player.position.x*dampener);
+        let player_y = zero_y + (player.position.y*-dampener);
+
+        painter.circle_filled(pos2(player_x,player_y), self.config.radar.enemy_size, self.config.radar.enemy_colour);
+
+        if self.config.radar.debug {
+            let xx = self.config.radar.x as f32;
+            let yy = self.config.radar.y as f32;
+            let upleft = pos2(xx, yy);
+            let upright = pos2(xx+(320.0*self.config.radar.scale), yy);
+            let downleft = pos2(xx, yy+(320.0*self.config.radar.scale));
+            let downright = pos2(xx+(320.0*self.config.radar.scale), yy+(320.0*self.config.radar.scale));
+            painter.line(vec![upleft, upright], Stroke::new(1.0, Color32::WHITE));
+            painter.line(vec![upright, downright], Stroke::new(1.0, Color32::WHITE));
+            painter.line(vec![downright, downleft], Stroke::new(1.0, Color32::WHITE));
+            painter.line(vec![downleft, upleft], Stroke::new(1.0, Color32::WHITE));
+            painter.line(vec![downleft, upright], Stroke::new(1.0, Color32::WHITE));
+            painter.line(vec![downright, upleft], Stroke::new(1.0, Color32::WHITE));
+
+            painter.line(
+                vec![pos2(self.config.radar.custom_zero_x as f32 -50.0+self.config.radar.x as f32,
+                self.config.radar.custom_zero_y as f32 -50.0+self.config.radar.y as f32),
+                pos2(self.config.radar.custom_zero_x as f32 +50.0+self.config.radar.x as f32,
+             self.config.radar.custom_zero_y as f32 +50.0+self.config.radar.y as f32)],
+                        Stroke::new(1.0, Color32::WHITE));
+            painter.line(vec![pos2(self.config.radar.custom_zero_x as f32 +50.0+self.config.radar.x as f32,
+                                   self.config.radar.custom_zero_y as f32 -50.0+self.config.radar.y as f32),
+                                    pos2(self.config.radar.custom_zero_x as f32 -50.0+self.config.radar.x as f32,
+                                         self.config.radar.custom_zero_y as f32 +50.0+self.config.radar.y as f32)],
+                        Stroke::new(1.0, Color32::WHITE));
+            painter.text(pos2(self.config.radar.x as f32, self.config.radar.y as f32),
+                 Align2::LEFT_TOP,
+                 &data.map_name,
+                 FontId::proportional(self.config.hud.font_size),
+                 Color32::WHITE
+            );
+            painter.text(pos2(self.config.radar.x as f32, self.config.radar.y as f32+(320.0*self.config.radar.scale)),
+                 Align2::LEFT_BOTTOM,
+                 format!("x{}/y{}", player.position.x, player.position.y),
+                 FontId::proportional(self.config.hud.font_size),
+                 Color32::WHITE
+            );
+        }
     }
 
     #[allow(unused)]
@@ -391,7 +493,7 @@ impl App {
         if self.config.player.player_name {
             self.text(
                 painter,
-                &player.name,
+                &data.map_name, //&player.name,
                 pos2(tr.x + ew, tr.y + offset),
                 Align2::LEFT_TOP,
                 None,

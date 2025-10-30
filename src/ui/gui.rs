@@ -889,7 +889,138 @@ impl App {
             .auto_shrink([false, true])
             .id_salt("hud_left")
             .show(ui, |ui| {
-                collapsing_open(ui, "Radar", |ui| {
+                collapsing_open(ui, "Radar", |ui|{
+                    if ui
+                        .checkbox(&mut self.config.radar.new_enable, "Enable")
+                        .changed()
+                    {
+                        self.send_config();
+                    }
+                    ui.horizontal(|ui| {
+                        if ui
+                            .add(
+                                DragValue::new(&mut self.config.radar.x)
+                                    .range(0..=5000)
+                                    .speed(0.02)
+                                    .max_decimals(0),
+                            )
+                            .changed()
+                        {
+                            self.send_config();
+                        }
+                        ui.label("Radar X");
+                    });
+                    ui.horizontal(|ui| {
+                        if ui
+                            .add(
+                                DragValue::new(&mut self.config.radar.y)
+                                    .range(0..=5000)
+                                    .speed(0.02)
+                                    .max_decimals(0),
+                            )
+                            .changed()
+                        {
+                            self.send_config();
+                        }
+                        ui.label("Radar Y");
+                    });
+                    ui.horizontal(|ui| {
+                        if ui
+                            .add(
+                                DragValue::new(&mut self.config.radar.scale)
+                                    .range(0.50..=1.30)
+                                    .speed(0.01)
+                                    .max_decimals(2),
+                            )
+                            .changed()
+                        {
+                            self.send_config();
+                        }
+                        ui.label("Radar scale");
+                    });
+
+
+                    ui.horizontal(|ui| {
+                        if ui
+                            .add(
+                                DragValue::new(&mut self.config.radar.enemy_size)
+                                    .range(0.01..=25.0)
+                                    .speed(0.02)
+                                    .max_decimals(2),
+                            )
+                            .changed()
+                        {
+                            self.send_config();
+                        }
+                        ui.label("Enemy size");
+                    });
+                    if let Some(color) = self.color_picker(
+                        ui,
+                        &self.config.radar.enemy_colour,
+                        "Enemy Colour",
+                    ) {
+                        self.config.radar.enemy_colour = color;
+                        self.send_config();
+                    }
+
+
+
+                    collapsing_open(ui, "Debug", |ui|{
+                        if ui
+                            .checkbox(&mut self.config.radar.debug, "Debug")
+                            .changed()
+                        {
+                            self.send_config();
+                        }
+
+                        ui.horizontal(|ui| {
+                            if ui
+                                .add(
+                                    DragValue::new(&mut self.config.radar.custom_zoom)
+                                        .range(0.1..=2.0)
+                                        .speed(0.001)
+                                        .max_decimals(2),
+                                )
+                                .changed()
+                            {
+                                self.send_config();
+                            }
+                            ui.label("Zoom");
+                        });
+
+                        ui.horizontal(|ui| {
+                            if ui
+                                .add(
+                                    DragValue::new(&mut self.config.radar.custom_zero_x)
+                                        .range(0..=5000)
+                                        .speed(0.02)
+                                        .max_decimals(0),
+                                )
+                                .changed()
+                            {
+                                self.send_config();
+                            }
+                            ui.label("Custom map zero X");
+                        });
+
+                        ui.horizontal(|ui| {
+                            if ui
+                                .add(
+                                    DragValue::new(&mut self.config.radar.custom_zero_y)
+                                        .range(0..=5000)
+                                        .speed(0.02)
+                                        .max_decimals(0),
+                                )
+                                .changed()
+                            {
+                                self.send_config();
+                            }
+                            ui.label("Custom map zero Y");
+                        });
+                    });
+
+                });
+                collapsing_open(ui, "Web Radar", |ui| {
                     ui.label(egui::RichText::new(format!("{}", self.radar_status)).color(
                         match self.radar_status {
                             RadarStatus::Connected(_) => Colors::GREEN,

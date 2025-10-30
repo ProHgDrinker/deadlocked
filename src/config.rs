@@ -316,6 +316,16 @@ impl Default for HudConfig {
 pub struct RadarConfig {
     pub enabled: bool,
     pub url: String,
+    pub new_enable: bool,
+    pub enemy_colour: Color32,
+    pub x: i32,
+    pub y: i32,
+    pub custom_zoom: f32,
+    pub scale: f32,
+    pub debug: bool,
+    pub custom_zero_x: i32,
+    pub custom_zero_y: i32,
+    pub enemy_size: f32,
 }
 
 impl Default for RadarConfig {
@@ -323,6 +333,16 @@ impl Default for RadarConfig {
         Self {
             enabled: false,
             url: DEFAULT_URL.to_string(),
+            new_enable: true,
+            enemy_colour: Color32::RED,
+            x: 100,
+            y: 100,
+            custom_zoom: 1.0,
+            scale: 1.0,
+            debug: false,
+            custom_zero_x: 100,
+            custom_zero_y: 100,
+            enemy_size: 5.0,
         }
     }
 }
