@@ -286,7 +286,7 @@ impl App {
         } else if &data.map_name == "de_vertigo" {
             map_zero_x = 246.0;
             map_zero_y = 137.0;
-            map_zoom = 1.0;
+            map_zoom = 1.2;
         } else {
             map_zero_x = self.config.radar.custom_zero_x as f32;
             map_zero_y = self.config.radar.custom_zero_y as f32;
